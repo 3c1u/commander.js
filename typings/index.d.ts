@@ -6,21 +6,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 declare namespace commander {
-
-  interface CommanderError extends Error {
+  export class CommanderError extends Error {
+    constructor(exitCode: number, code: string, message: string);
     code: string;
     exitCode: number;
     message: string;
     nestedError?: string;
   }
-  type CommanderErrorConstructor = new (exitCode: number, code: string, message: string) => CommanderError;
 
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface InvalidOptionArgumentError extends CommanderError {
+  export class InvalidOptionArgumentError extends CommanderError {
+    constructor(message: string);
   }
-  type InvalidOptionArgumentErrorConstructor = new (message: string) => InvalidOptionArgumentError;
 
-  interface Option {
+  export class Option {
+    constructor(flags: string, description?: string);
+
     flags: string;
     description: string;
 
@@ -79,9 +80,10 @@ declare namespace commander {
      */
     name(): string;
   }
-  type OptionConstructor = new (flags: string, description?: string) => Option;
 
-  interface Help {
+  export class Help {
+    constructor();
+  
     /** output helpWidth, long lines are wrapped to fit */
     helpWidth?: number;
     sortSubcommands: boolean;
@@ -126,7 +128,6 @@ declare namespace commander {
     /** Generate the built-in help text. */
     formatHelp(cmd: Command, helper: Help): string;
   }
-  type HelpConstructor = new () => Help;
   type HelpConfiguration = Partial<Help>;
 
   interface ParseOptions {
@@ -154,7 +155,9 @@ declare namespace commander {
     [key: string]: any;
   }
 
-  interface Command {
+  export class Command {
+    constructor(name?: string);
+
     args: string[];
 
     commands: Command[];
@@ -585,7 +588,6 @@ declare namespace commander {
      */
     on(event: string | symbol, listener: (...args: any[]) => void): this;
   }
-  type CommandConstructor = new (name?: string) => Command;
 
   interface CommandOptions {
     hidden?: boolean;
@@ -603,19 +605,7 @@ declare namespace commander {
     unknown: string[];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface CommanderStatic extends Command {
-    program: Command;
-    Command: CommandConstructor;
-    Option: OptionConstructor;
-    CommanderError: CommanderErrorConstructor;
-    InvalidOptionArgumentError: InvalidOptionArgumentErrorConstructor;
-    Help: HelpConstructor;
-  }
-
+  export const program: Command;
 }
 
-// Declaring namespace AND global
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-declare const commander: commander.CommanderStatic;
 export = commander;
